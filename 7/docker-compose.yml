@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  builder:
+    build: python-builder
+    working_dir: /app
+    volumes:
+      - pyenv:/pyenv/
+    command: tail -f /dev/null
+
+  web:
+    build: app
+    depends_on:
+      - builder
+    volumes:
+      - ./app:/app/
+      - pyenv:/pyenv/
+      - ./log/uwsgi:/var/log/uwsgi
+    ports:
+      - "8080:8080"
+    working_dir: /app
+    command: /bin/bash -c "source /pyenv/bin/activate && uwsgi --http :8080 --wsgi-file app.py --callable app --processes 2 --threads 2 --logto /var/log/uwsgi/web.log -b 32768"
+
+volumes:
+  pyenv:
