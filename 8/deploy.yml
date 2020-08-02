@@ -1,0 +1,30 @@
+---
+
+- name: Foundation
+  hosts: all
+  become: True
+  roles:
+    - { role: "foundation", tags: ["foundation"] }
+
+- name: Build
+  hosts: build
+  become: True
+  roles:
+    - { role: "build", tags: ["build"] }
+
+- name: Deploy
+  hosts: web
+  become: True
+  roles:
+    - { role: "deploy", tags: ["deploy"] }
+
+- hosts: "{{ groups['build'][0] }}"
+  tags: sync_warfile
+  become: True
+  tasks:
+    - name: Download WAR file
+      synchronize:
+        src: "{{ project_build_root }}/target/{{ war_filename }}"
+        dest: "/{{ tomcat_webroot_dir }}/{{ war_filename }}"
+        mode: pull
+      delegate_to: "{{ groups['web'][0] }}"

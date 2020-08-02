@@ -1,0 +1,9 @@
+default_locale: 'en_US.UTF-8'
+
+common_packages:
+  - build-essential
+  - ca-certificates
+  - vim
+  - git
+  - curl
+  - ntp

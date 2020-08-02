@@ -1,0 +1,16 @@
+---
+
+- name: Ensure maven package is present
+  apt:
+    name: maven
+    state: present
+
+- name: Clone project
+  git:
+    repo: 'https://github.com/boxfuse/boxfuse-sample-java-war-hello.git'
+    dest: "{{ project_build_root }}"
+
+- name: Build app
+  command: mvn package
+  args:
+    chdir: "{{ project_build_root }}"

@@ -1,0 +1,22 @@
+- name: Update apt cache
+  apt: update_cache=yes
+
+- name: Install common packages
+  apt: name='{{ common_packages }}' state=latest
+
+- name: Enable NTP sync
+  service: name=ntp state=started enabled=yes
+
+# Date and time
+- name: 'Remove localtime file'
+  file: 'path=/etc/localtime state=absent'
+
+- name: 'Link Moscow localtime file'
+  file: 'src=/usr/share/zoneinfo/Europe/Moscow dest=/etc/localtime state=link'
+
+# locale settings
+- name: Execute locale-gen
+  shell: 'locale-gen {{ default_locale }}'
+
+- name: Install default locale
+  lineinfile: "dest=/etc/default/locale state=present line='LC_ALL=\"{{ default_locale }}\"'"
